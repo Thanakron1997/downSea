@@ -15,19 +15,18 @@ def download_sra_file(df_sra_list, output_seq_file):
         os.mkdir(folder_output_sra)
     else:
         pass
-    # /home/ad0/test/sratoolkit/bin/fasterq-dump
 
     sra_id_list = list(df_sra_list.index)
     for i in sra_id_list: # loop for download sra
         sra_run_i = df_sra_list['Run'][i]
-        file_sra_i = folder_output_sra + sra_run_i + '.sra' #สำหรับ โหลดมาแล้วให้มาเป็นไฟล์เลย ปกติจะมาเป็น folder
+        file_sra_i = folder_output_sra + sra_run_i + '.sra' 
 
-        if not os.path.exists(file_sra_i): #checj sra existed or not
+        if not os.path.exists(file_sra_i): #check sra existed or not
             prefetch_com = dir_path + 'sratoolkit/bin/prefetch'
             cmd_for_download_sra = prefetch_com +" -f yes -o " + file_sra_i + ' ' + sra_run_i
             print("Downloading {} SRA file.....".format(sra_run_i))
-            subprocess.run(cmd_for_download_sra, shell=True ) #run prefetch for download sra stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            if not os.path.exists(file_sra_i): # check file ว่า โหลดสำเร็จไหม
+            subprocess.run(cmd_for_download_sra, shell=True) #run prefetch for download sra stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            if not os.path.exists(file_sra_i): 
                 print("Can't Download : {} file".format(sra_run_i))
             else:
                 print("Download Completed")
@@ -100,7 +99,6 @@ def download_fasta_file(assembly_list, output_seq_file):
             with zipfile.ZipFile(file_out_put_name, 'r') as zip_ref:
                 zip_ref.extractall(extract_zip_path)
             os.remove(file_out_put_name)
-            # /home/va/test_download/fasta/GCA_013392775.1/ncbi_dataset/data/GCA_013392775.1/
             file_fasta_i = folder_output_fasta + assembly_name_i + '/ncbi_dataset/data/' + assembly_name_i +'/*.fna'
             file_fasta_i_move = folder_output_fasta + assembly_name_i + '.fna'
             for i in glob.glob(file_fasta_i):
@@ -109,17 +107,4 @@ def download_fasta_file(assembly_list, output_seq_file):
                 shutil.rmtree(file_remove_i)
             print("Download Completed")
 
-# # input and output 
-# input_metadata_file = 'test_csv.csv'
-# output_seq_file = '/home/va/test_download'
-
-# metadata_dataframe = pd.read_csv(input_metadata_file)
-# #แยกข้อมูล SRA กับ assembly file ออกจากกัน for download
-# df_sra_list = metadata_dataframe[metadata_dataframe['Run'].notna()]
-# assembly_list = metadata_dataframe[metadata_dataframe['asm_acc'].notna()]
-
-
-# download_sra_file(df_sra_list)
-# download_fastq_file(df_sra_list)
-# download_fasta_file(assembly_list)
 
