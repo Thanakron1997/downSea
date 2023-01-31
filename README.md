@@ -35,6 +35,7 @@ optional arguments:
 ```
 
 # Example 
+- Create folder that you want to save data in the example I use folder name test
 ```
-python3 down_sea.py -d all -o /home/ad0/test -i test_csv.csv
+python3 down_sea.py -d all -o /home/user/test -i test_csv.csv
 ```
