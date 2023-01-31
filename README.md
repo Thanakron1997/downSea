@@ -19,7 +19,7 @@ cd download_seq ; python3 install.py
 
 # Usage 
 ```
-usage: download_seq.py [-h] [-d DOWNLOAD_TYPE] [-o OUTPUTDIR] [-i INPUT_CSV]
+usage: down_sea.py [-h] [-d DOWNLOAD_TYPE] [-o OUTPUTDIR] [-i INPUT_CSV]
 
 Program for download Sequence file (Raw sequence SRA and FASTQ, Assembly sequence FASTA format)
 
@@ -36,4 +36,5 @@ optional arguments:
 
 # Example 
 ```
+python3 down_sea.py -d all -o /home/ad0/test -i test_csv.csv
 ```
