@@ -1,4 +1,4 @@
-download_seq
+down_sea
 ==============
 
 Program for download dna sequence (SRA, FASTQ, FASTA) from NCBI
