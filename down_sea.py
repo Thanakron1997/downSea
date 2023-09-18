@@ -1,7 +1,7 @@
 import argparse
 import pandas as pd
 from argparse import RawTextHelpFormatter
-from download_seq import multi_download_fastq,multi_download_sra,multi_download_fasta
+from download_seq import multi_download_fastq,multi_download_sra,multi_download_fasta,multi_download_nucleotide
 
 title_program = 'Program for download Sequence file (Raw sequence SRA and FASTQ, Assembly sequence FASTA format)'
 
