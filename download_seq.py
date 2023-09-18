@@ -95,7 +95,7 @@ def process_sra(args):
 
 def process_nuc(args):
     nuc_index, df_nuc_list,folder_output_nuc = args
-    nuc_accession = str(df_nuc_list['asm_acc'][nuc_index])
+    nuc_accession = str(df_nuc_list['Accession'][nuc_index])
     file_out_put_name = folder_output_nuc + nuc_accession + '.zip'
     cmd_for_download = dataset_path + " download virus genome accession "+nuc_accession+ " --include genome --filename " + file_out_put_name
     print('Download Sequence Data (Nucleotide) - Accession Number: {} - ({})'.format(nuc_accession,nuc_index))
@@ -124,8 +124,7 @@ def process_nuc(args):
             with gzip.open(file_name_path_gz, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         os.remove(file_name_path_raw)
-        print("Download Completed")
-        
+
 def process_fasta(ass_index,assembly_list,folder_output_fasta):
     assembly_name_i = str(assembly_list['asm_acc'][ass_index])
     file_out_put_name = folder_output_fasta + assembly_name_i + '.zip'
