@@ -19,19 +19,27 @@ cd download_seq ; python3 install.py
 
 # Usage 
 ```
-usage: down_sea.py [-h] [-d DOWNLOAD_TYPE] [-o OUTPUTDIR] [-i INPUT_CSV]
+usage: down_sea.py [-h] [-d DOWNLOAD_TYPE] [-o OUTPUTDIR] [-i INPUT_CSV] [-m MULTIPROCESSING]
 
 Program for download Sequence file (Raw sequence SRA and FASTQ, Assembly sequence FASTA format)
 
 optional arguments:
   -h, --help            show this help message and exit
   -d DOWNLOAD_TYPE, --download_type DOWNLOAD_TYPE
-                        Operation for download all = download all format, fastq_only = download only fastq format, fasta_only download only fasta
-                        format, raw_seq = download SRA and FASTQ format
+                        Operation for download:
+                        all = download raw sequences and assembly (FASTQ, FASTA format)
+                        raw_seq = download only fastq format
+                        assembly =  download only fasta format
+                        sra = download SRA format
+
   -o OUTPUTDIR, --outputdir OUTPUTDIR
-                        Output directory folder Ex. /home/test/test_download
+                        Output directory folder Ex.  /home/test/test_download
+
   -i INPUT_CSV, --input_csv INPUT_CSV
                         Input file in csv format
+
+  -m MULTIPROCESSING, --multiprocessing MULTIPROCESSING
+                        Use Multiprocess for faster download enter code : 1 - 20
 ```
 
 # Example 
