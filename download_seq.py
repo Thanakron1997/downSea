@@ -8,6 +8,7 @@ import random
 import time
 import gzip
 from multiprocessing import Pool
+import multiprocessing
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) +'/'
 fasterq_domp_com = dir_path + 'sratoolkit/bin/fasterq-dump'
@@ -199,6 +200,14 @@ def process_fasta(ass_index,assembly_list,folder_output_fasta):
                     shutil.copyfileobj(f_in, f_out)
             os.remove(file_name_path_raw)
 
+def fastq_que_function(job_queue, result_queue):
+    while True:
+        job = job_queue.get()
+        if job is None:
+            break
+        result = process_fastq(job)
+        result_queue.put(result)
+
 def multi_download_fastq(df_sra_list,output_seq_file,number_core):
     folder_output_fastq = output_seq_file + '/raw_sequences/'
     folder_output_sra = output_seq_file + '/temp_sra/'
@@ -210,12 +219,42 @@ def multi_download_fastq(df_sra_list,output_seq_file,number_core):
         os.mkdir(folder_output_sra)
     else:
         pass
-    df_sra_index = df_sra_list.index
-    with Pool(processes=number_core) as pool:
-        pool.map(process_fastq, [(sra_index, df_sra_list,folder_output_sra,folder_output_fastq) for sra_index in df_sra_index])
+    job_queue = multiprocessing.Queue()
+    result_queue = multiprocessing.Queue()
+    pool = multiprocessing.Pool(processes=number_core, initializer=fastq_que_function, initargs=(job_queue, result_queue))
+    df_sra_index = df_sra_list.index.tolist()
+    jobs =  [(sra_index, df_sra_list,folder_output_sra,folder_output_fastq) for sra_index in df_sra_index]
+    for job in jobs:
+        job_queue.put(job)
+    for _ in range(number_core):
+        job_queue.put(None)
+    results = []
+    for _ in range(len(jobs)):
+        result = result_queue.get()
+        results.append(result)
+    pool.close()
+    pool.join()
     if os.path.exists(folder_output_sra):
         shutil.rmtree(folder_output_sra, ignore_errors = False)
         print("All Download Completed")
+
+# def multi_download_fastq(df_sra_list,output_seq_file,number_core):
+#     folder_output_fastq = output_seq_file + '/raw_sequences/'
+#     folder_output_sra = output_seq_file + '/temp_sra/'
+#     if not os.path.exists(folder_output_fastq):
+#         os.mkdir(folder_output_fastq)
+#     else:
+#         pass
+#     if not os.path.exists(folder_output_sra):
+#         os.mkdir(folder_output_sra)
+#     else:
+#         pass
+#     df_sra_index = df_sra_list.index
+#     with Pool(processes=number_core) as pool:
+#         pool.map(process_fastq, [(sra_index, df_sra_list,folder_output_sra,folder_output_fastq) for sra_index in df_sra_index])
+#     if os.path.exists(folder_output_sra):
+#         shutil.rmtree(folder_output_sra, ignore_errors = False)
+#         print("All Download Completed")
 
 def multi_download_sra(df_sra_list, output_seq_file,number_core):
     folder_output_sra = output_seq_file + '/sra/'

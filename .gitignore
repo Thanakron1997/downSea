@@ -131,3 +131,6 @@ dmypy.json
 sratoolkit/
 dataset*
 nuc_dengue_thai.csv
+dataformat*
+download_seq2.py
+files_download/
