@@ -1,7 +1,7 @@
 import argparse
 import pandas as pd
 from argparse import RawTextHelpFormatter
-from download_seq import multi_download_fastq,multi_download_sra,multi_download_fasta,multi_download_nucleotide
+from func_downsea import multi_download_fastq,multi_download_sra,multi_download_fasta,multi_download_nucleotide
 
 title_program = 'Program for download Sequence file (Raw sequence SRA and FASTQ, Assembly sequence FASTA format)'
 
@@ -21,15 +21,16 @@ if args.download_type == "all":
     metadata_dataframe = pd.read_csv(input_metadata_file)
     df_sra_list = metadata_dataframe[metadata_dataframe['Run'].notna()]
     assembly_list = metadata_dataframe[metadata_dataframe['asm_acc'].notna()]
+    fastqonly = False
     if core_use == None:
         print("Using 1 core for downloading")
         number_core = 1
-        multi_download_fastq(df_sra_list, output_seq_file,number_core)
+        multi_download_fastq(df_sra_list, output_seq_file,number_core,fastqonly)
         multi_download_fasta(assembly_list, output_seq_file,number_core)
     else:
         try:
             number_core = int(core_use)
-            multi_download_fastq(df_sra_list, output_seq_file,number_core)
+            multi_download_fastq(df_sra_list, output_seq_file,number_core,fastqonly)
             multi_download_fasta(assembly_list, output_seq_file,number_core)
         except Exception as e:
             print("Error -> {}".format(e))
@@ -41,14 +42,15 @@ elif args.download_type == "raw_seq":
     core_use = args.multiprocessing
     metadata_dataframe = pd.read_csv(input_metadata_file)
     df_sra_list = metadata_dataframe[metadata_dataframe['Run'].notna()]
+    fastqonly = True
     if core_use == None:
         print("Using 1 core for downloading")
         number_core = 1
-        multi_download_fastq(df_sra_list, output_seq_file,number_core)
+        multi_download_fastq(df_sra_list, output_seq_file,number_core,fastqonly)
     else:
         try:
             number_core = int(core_use)
-            multi_download_fastq(df_sra_list, output_seq_file,number_core)
+            multi_download_fastq(df_sra_list, output_seq_file,number_core,fastqonly)
         except Exception as e:
             print("Error -> {}".format(e))
     print("Finished")

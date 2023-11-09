@@ -7,20 +7,27 @@ import shutil
 import random
 import time
 import gzip
-from multiprocessing import Pool
+from tqdm import tqdm 
 import multiprocessing
+from multiprocessing import Pool
+from errorlog import error_logs,error_logs_try
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) +'/'
 fasterq_domp_com = dir_path + 'sratoolkit/bin/fasterq-dump'
 prefetch_com = dir_path + 'sratoolkit/bin/prefetch'
 dataset_path = dir_path + 'datasets'
 
+# ===================================================================== #
+#                       download seqences function
+# ===================================================================== #
+
 def download_sra_file(file_sra_i,sra_run_i):
-    try:
-        cmd_for_download_sra = prefetch_com +" -f yes -o " + file_sra_i + ' ' + sra_run_i
-        subprocess.run(cmd_for_download_sra, shell=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-    except subprocess.CalledProcessError as e:
-        print("Can't run the command. Error message: ", e)
+    # try:
+    cmd_for_download_sra = prefetch_com +" -f yes -o " + file_sra_i + ' ' + sra_run_i
+    processresult = subprocess.run(cmd_for_download_sra,shell=True, capture_output=True)
+    error_logs(cmd_for_download_sra,processresult)
+    # except subprocess.CalledProcessError as e:
+    #     print("Can't run the command. Error message: ", e)
     if not os.path.exists(file_sra_i): # check file ว่า โหลดสำเร็จไหม
         print("Can't Download : {} file".format(sra_run_i))
         i_loop = 1
@@ -28,7 +35,8 @@ def download_sra_file(file_sra_i,sra_run_i):
             i_loop += 1
             sec_ran_reload = random.randint(30, 120)
             time.sleep(sec_ran_reload)
-            subprocess.run(cmd_for_download_sra, shell=True,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            processresult = subprocess.run(cmd_for_download_sra,shell=True, capture_output=True)
+            error_logs(cmd_for_download_sra,processresult)
             if not os.path.exists(file_sra_i):
                 print("Can't Download (SRA): {} file".format(sra_run_i))
             else:
@@ -36,25 +44,26 @@ def download_sra_file(file_sra_i,sra_run_i):
     return cmd_for_download_sra
 
 def download_fastq_file(file_sra_i,sra_run_i,folder_output_fastq,cmd_for_download_sra):
-    try:
-        cmd_fasterq_dump = fasterq_domp_com + " " + file_sra_i + " -O " + folder_output_fastq 
-        subprocess.run(cmd_fasterq_dump, shell=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-    except subprocess.CalledProcessError as e:
-        print("Can't run the command. Error message: ", e)
-
+    # try:
+    cmd_fasterq_dump = fasterq_domp_com + " " + file_sra_i + " -O " + folder_output_fastq 
+    processresult = subprocess.run(cmd_fasterq_dump, shell=True, capture_output=True)
+    error_logs(cmd_fasterq_dump,processresult)
+    # except subprocess.CalledProcessError as e:
+    #     print("Can't run the command. Error message: ", e)
     files_in_directory = os.listdir(folder_output_fastq)
     files_contain_target = [file for file in files_in_directory if sra_run_i in file]
     total_files_fastq = len(files_contain_target)
     if total_files_fastq > 0:
-        print("Download {} Completed".format(sra_run_i))
+        pass
+        # print("Download {} Completed".format(sra_run_i))
     elif total_files_fastq == 0:
         print("Can't Download (FASTQ): {} file".format(sra_run_i))
         if not os.path.exists(file_sra_i):
-            subprocess.run(cmd_for_download_sra, shell=True,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            subprocess.run(cmd_fasterq_dump, shell=True,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            processresult = subprocess.run(cmd_for_download_sra,shell=True, capture_output=True)
+            error_logs(cmd_for_download_sra,processresult)
         else:
-            subprocess.run(cmd_fasterq_dump, shell=True,stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            pass
+            processresult = subprocess.run(cmd_fasterq_dump, shell=True, capture_output=True)
+            error_logs(cmd_fasterq_dump,processresult)
     else:
         pass
     try:
@@ -65,47 +74,29 @@ def download_fastq_file(file_sra_i,sra_run_i,folder_output_fastq,cmd_for_downloa
                 with gzip.open(file_name_path_gz, 'wb') as f_out:
                     shutil.copyfileobj(f_in, f_out)
             os.remove(file_name_path_raw)
-        try:
-            if os.path.exists(file_sra_i):
-                os.remove(file_sra_i)
-        except Exception as e:
-            print(e)
+        # try:
+        #     if os.path.exists(file_sra_i):
+        #         os.remove(file_sra_i)
+        # except Exception as e:
+        #     print(e)
     except Exception as e_1:
-        print(e_1)
+        error_logs_try("Error -> {} in {}".format(e_1,sra_run_i),e_1)
+        print("Error -> {} in {}".format(e_1,sra_run_i))
 
-def process_fastq(args):
-    sra_index, df_sra_list,folder_output_sra,folder_output_fastq = args
-    sra_run_i = df_sra_list['Run'][sra_index]
-    file_sra_i = folder_output_sra + '/' + sra_run_i + '.sra' 
-    print('Download Sequence Data (FASTQ) - SRA Number: {} - ({})'.format(sra_run_i,sra_index))
-    try:
-        cmd_for_download_sra = download_sra_file(file_sra_i,sra_run_i)
-        download_fastq_file(file_sra_i,sra_run_i,folder_output_fastq,cmd_for_download_sra)
-    except Exception as e_all:
-        print("Error -> {} in {}".format(e_all,sra_run_i))
-
-def process_sra(args):
-    sra_index, df_sra_list,folder_output_sra = args
-    sra_run_i = df_sra_list['Run'][sra_index]
-    file_sra_i = folder_output_sra + sra_run_i + '.sra'
-    print('Download Sequence Data (SRA) - SRA Number: {} - ({})'.format(sra_run_i,sra_index))
-    try:
-        cmd_for_download_sra = download_sra_file(file_sra_i,sra_run_i)
-    except Exception as e:
-        print("Error -> {} in {}".format(e,sra_run_i))
-
-def process_nuc(args):
+def download_ncleotide_file(args):
     nuc_index, df_nuc_list,folder_output_nuc = args
     nuc_accession = str(df_nuc_list['Accession'][nuc_index])
     file_out_put_name = folder_output_nuc + nuc_accession + '.zip'
     cmd_for_download = dataset_path + " download virus genome accession "+nuc_accession+ " --include genome --filename " + file_out_put_name
-    print('Download Sequence Data (Nucleotide) - Accession Number: {} - ({})'.format(nuc_accession,nuc_index))
-    subprocess.run(cmd_for_download, shell=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+    # print('Download Sequence Data (Nucleotide) - Accession Number: {} - ({})'.format(nuc_accession,nuc_index))
+    processresult = subprocess.run(cmd_for_download, shell=True, capture_output=True)
+    error_logs(cmd_for_download,processresult)
     if not os.path.exists(file_out_put_name):
         print("Can't Download (Nucleotide): {} file".format(nuc_accession))
         sec_ran = random.randint(30, 150)
         time.sleep(sec_ran)
-        subprocess.run(cmd_for_download, shell=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+        processresult = subprocess.run(cmd_for_download, shell=True, capture_output=True)
+        error_logs(cmd_for_download,processresult)
     else:
         pass
     if os.path.exists(file_out_put_name):
@@ -126,7 +117,7 @@ def process_nuc(args):
                 shutil.copyfileobj(f_in, f_out)
         os.remove(file_name_path_raw)
 
-def process_fasta(ass_index,assembly_list,folder_output_fasta):
+def download_assembly_file(ass_index,assembly_list,folder_output_fasta):
     assembly_name_i = str(assembly_list['asm_acc'][ass_index])
     file_out_put_name = folder_output_fasta + assembly_name_i + '.zip'
     cmd_for_download = dataset_path + " download genome accession "+assembly_name_i+ " --include genome --filename " + file_out_put_name
@@ -158,7 +149,6 @@ def process_fasta(ass_index,assembly_list,folder_output_fasta):
             with gzip.open(file_name_path_gz, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
         os.remove(file_name_path_raw)
-
     if not os.path.exists(file_name_path_gz):
         assembly_i_GCF = assembly_name_i.replace("GCA", "GCF")
         print("Can't Download : {} file and try to download by {}....".format(assembly_name_i,assembly_i_GCF))
@@ -200,15 +190,54 @@ def process_fasta(ass_index,assembly_list,folder_output_fasta):
                     shutil.copyfileobj(f_in, f_out)
             os.remove(file_name_path_raw)
 
-def fastq_que_function(job_queue, result_queue):
+# ===================================================================== #
+#                       process seqences function
+# ===================================================================== #
+
+def process_sra(args):
+    sra_index, df_sra_list,folder_output_sra = args
+    sra_run_i = df_sra_list['Run'][sra_index]
+    file_sra_i = folder_output_sra + sra_run_i + '.sra'
+    print('Download Sequence Data (SRA) - SRA Number: {} - ({})'.format(sra_run_i,sra_index))
+    try:
+        _ = download_sra_file(file_sra_i,sra_run_i)
+    except Exception as e:
+        print("Error -> {} in {}".format(e,sra_run_i))
+        error_logs_try("Error -> {} in {}".format(e,sra_run_i),e)
+
+def process_fastq_func(args):
+    sra_index, df_sra_list,folder_output_sra,folder_output_fastq,fastqonly = args
+    sra_run_i = df_sra_list['Run'][sra_index]
+    file_sra_i = folder_output_sra + '/' + sra_run_i + '.sra' 
+    # print('Download Sequence Data (FASTQ) - SRA Number: {} - ({})'.format(sra_run_i,sra_index))
+    try:
+        cmd_for_download_sra = download_sra_file(file_sra_i,sra_run_i)
+        download_fastq_file(file_sra_i,sra_run_i,folder_output_fastq,cmd_for_download_sra)
+    except Exception as e_all:
+        print("Error -> {} in {}".format(e_all,sra_run_i))
+        error_logs_try("Error -> {} in {}".format(e_all,sra_run_i),e_all)
+    if fastqonly == True:
+        try:
+            if os.path.exists(file_sra_i):
+                os.remove(file_sra_i)
+        except Exception as e_delete:
+            error_logs_try("Error -> {} in {}".format(e_delete,sra_run_i),e_delete)
+            print("Error -> {} in {}".format(e_delete,sra_run_i))
+
+
+# ===================================================================== #
+#                       multidownload function
+# ===================================================================== #
+
+def fastq_working(job_queue, result_queue):
     while True:
         job = job_queue.get()
         if job is None:
             break
-        result = process_fastq(job)
+        result = process_fastq_func(job)
         result_queue.put(result)
 
-def multi_download_fastq(df_sra_list,output_seq_file,number_core):
+def multi_download_fastq(df_fastq,output_seq_file,number_core,fastqonly):
     folder_output_fastq = output_seq_file + '/raw_sequences/'
     folder_output_sra = output_seq_file + '/temp_sra/'
     if not os.path.exists(folder_output_fastq):
@@ -221,40 +250,25 @@ def multi_download_fastq(df_sra_list,output_seq_file,number_core):
         pass
     job_queue = multiprocessing.Queue()
     result_queue = multiprocessing.Queue()
-    pool = multiprocessing.Pool(processes=number_core, initializer=fastq_que_function, initargs=(job_queue, result_queue))
-    df_sra_index = df_sra_list.index.tolist()
-    jobs =  [(sra_index, df_sra_list,folder_output_sra,folder_output_fastq) for sra_index in df_sra_index]
-    for job in jobs:
-        job_queue.put(job)
-    for _ in range(number_core):
-        job_queue.put(None)
-    results = []
-    for _ in range(len(jobs)):
-        result = result_queue.get()
-        results.append(result)
+    pool = multiprocessing.Pool(processes=number_core, initializer=fastq_working, initargs=(job_queue, result_queue))
+    df_fastq_index = df_fastq.index.tolist()
+    jobs =  [(index_, df_fastq,folder_output_sra,folder_output_fastq,fastqonly) for index_ in df_fastq_index]
+    with tqdm(total=len(jobs), desc="Processing Jobs") as pbar:
+        for job in jobs:
+            job_queue.put(job)
+        for _ in range(number_core):
+            job_queue.put(None)
+        results = []
+        for _ in range(len(jobs)):
+            result = result_queue.get()
+            results.append(result)
+            pbar.update(1)
     pool.close()
     pool.join()
     if os.path.exists(folder_output_sra):
         shutil.rmtree(folder_output_sra, ignore_errors = False)
         print("All Download Completed")
 
-# def multi_download_fastq(df_sra_list,output_seq_file,number_core):
-#     folder_output_fastq = output_seq_file + '/raw_sequences/'
-#     folder_output_sra = output_seq_file + '/temp_sra/'
-#     if not os.path.exists(folder_output_fastq):
-#         os.mkdir(folder_output_fastq)
-#     else:
-#         pass
-#     if not os.path.exists(folder_output_sra):
-#         os.mkdir(folder_output_sra)
-#     else:
-#         pass
-#     df_sra_index = df_sra_list.index
-#     with Pool(processes=number_core) as pool:
-#         pool.map(process_fastq, [(sra_index, df_sra_list,folder_output_sra,folder_output_fastq) for sra_index in df_sra_index])
-#     if os.path.exists(folder_output_sra):
-#         shutil.rmtree(folder_output_sra, ignore_errors = False)
-#         print("All Download Completed")
 
 def multi_download_sra(df_sra_list, output_seq_file,number_core):
     folder_output_sra = output_seq_file + '/sra/'
@@ -277,7 +291,7 @@ def multi_download_nucleotide(df_nuc_list, output_seq_file,number_core):
         pass
     df_nuc_index = df_nuc_list.index
     with Pool(processes=number_core) as pool:
-        pool.map(process_nuc, [(nuc_index, df_nuc_list,folder_output_nuc) for nuc_index in df_nuc_index])
+        pool.map(download_ncleotide_file, [(nuc_index, df_nuc_list,folder_output_nuc) for nuc_index in df_nuc_index])
         print("All Download Completed")
 
 def multi_download_fasta(assembly_list, output_seq_file,number_core):
@@ -288,7 +302,24 @@ def multi_download_fasta(assembly_list, output_seq_file,number_core):
         pass
     assembly_path_list = assembly_list.index
     with Pool(processes=number_core) as pool:
-        pool.map(process_fasta, [(ass_index, assembly_list,folder_output_fasta) for ass_index in assembly_path_list])
+        pool.map(download_assembly_file, [(ass_index, assembly_list,folder_output_fasta) for ass_index in assembly_path_list])
     print("All Download Completed")
 
 
+# def multi_download_fastq(df_sra_list,output_seq_file,number_core):
+#     folder_output_fastq = output_seq_file + '/raw_sequences/'
+#     folder_output_sra = output_seq_file + '/temp_sra/'
+#     if not os.path.exists(folder_output_fastq):
+#         os.mkdir(folder_output_fastq)
+#     else:
+#         pass
+#     if not os.path.exists(folder_output_sra):
+#         os.mkdir(folder_output_sra)
+#     else:
+#         pass
+#     df_sra_index = df_sra_list.index
+#     with Pool(processes=number_core) as pool:
+#         pool.map(process_fastq, [(sra_index, df_sra_list,folder_output_sra,folder_output_fastq) for sra_index in df_sra_index])
+#     if os.path.exists(folder_output_sra):
+#         shutil.rmtree(folder_output_sra, ignore_errors = False)
+#         print("All Download Completed")
