@@ -9,7 +9,6 @@ import time
 import gzip
 from tqdm import tqdm 
 import multiprocessing
-from multiprocessing import Pool
 from errorlog import error_logs,error_logs_try
 
 dir_path = os.path.dirname(os.path.realpath(__file__)) +'/'
@@ -194,7 +193,7 @@ def download_assembly_file(ass_index,assembly_list,folder_output_fasta):
 #                       process seqences function
 # ===================================================================== #
 
-def process_sra(args):
+def process_sra_func(args):
     sra_index, df_sra_list,folder_output_sra = args
     sra_run_i = df_sra_list['Run'][sra_index]
     file_sra_i = folder_output_sra + sra_run_i + '.sra'
@@ -265,10 +264,19 @@ def multi_download_fastq(df_fastq,output_seq_file,number_core,fastqonly):
             pbar.update(1)
     pool.close()
     pool.join()
-    if os.path.exists(folder_output_sra):
-        shutil.rmtree(folder_output_sra, ignore_errors = False)
-        print("All Download Completed")
+    if fastqonly == True:
+        if os.path.exists(folder_output_sra):
+            shutil.rmtree(folder_output_sra, ignore_errors = False)
+    print("All Download Completed")
 
+
+def sra_working(job_queue, result_queue):
+    while True:
+        job = job_queue.get()
+        if job is None:
+            break
+        result = process_sra_func(job)
+        result_queue.put(result)
 
 def multi_download_sra(df_sra_list, output_seq_file,number_core):
     folder_output_sra = output_seq_file + '/sra/'
@@ -276,12 +284,33 @@ def multi_download_sra(df_sra_list, output_seq_file,number_core):
         os.mkdir(folder_output_sra)
     else:
         pass
-    df_sra_index = df_sra_list.index
-    with Pool(processes=number_core) as pool:
-        pool.map(process_sra, [(sra_index, df_sra_list,folder_output_sra) for sra_index in df_sra_index])
-    # if os.path.exists(folder_output_sra):
-    #     shutil.rmtree(folder_output_sra, ignore_errors = False)
-        print("All Download Completed")
+    job_queue = multiprocessing.Queue()
+    result_queue = multiprocessing.Queue()
+    pool = multiprocessing.Pool(processes=number_core, initializer=sra_working, initargs=(job_queue, result_queue))
+    df_sra_index = df_sra_list.index.tolist()
+    jobs =  [(index_, df_sra_list,folder_output_sra) for index_ in df_sra_index]
+    with tqdm(total=len(jobs), desc="Processing Jobs") as pbar:
+        for job in jobs:
+            job_queue.put(job)
+        for _ in range(number_core):
+            job_queue.put(None)
+        results = []
+        for _ in range(len(jobs)):
+            result = result_queue.get()
+            results.append(result)
+            pbar.update(1)
+    pool.close()
+    pool.join()
+    print("All Download Completed")
+
+
+def nucloetide_working(job_queue, result_queue):
+    while True:
+        job = job_queue.get()
+        if job is None:
+            break
+        result = download_ncleotide_file(job)
+        result_queue.put(result)
 
 def multi_download_nucleotide(df_nuc_list, output_seq_file,number_core):
     folder_output_nuc = output_seq_file + '/nucleotide/'
@@ -289,37 +318,55 @@ def multi_download_nucleotide(df_nuc_list, output_seq_file,number_core):
         os.mkdir(folder_output_nuc)
     else:
         pass
-    df_nuc_index = df_nuc_list.index
-    with Pool(processes=number_core) as pool:
-        pool.map(download_ncleotide_file, [(nuc_index, df_nuc_list,folder_output_nuc) for nuc_index in df_nuc_index])
-        print("All Download Completed")
+    job_queue = multiprocessing.Queue()
+    result_queue = multiprocessing.Queue()
+    pool = multiprocessing.Pool(processes=number_core, initializer=nucloetide_working, initargs=(job_queue, result_queue))
+    df_nuc_index = df_nuc_list.index.tolist()
+    jobs =  [(index_, df_nuc_list,folder_output_nuc) for index_ in df_nuc_index]
+    with tqdm(total=len(jobs), desc="Processing Jobs") as pbar:
+        for job in jobs:
+            job_queue.put(job)
+        for _ in range(number_core):
+            job_queue.put(None)
+        results = []
+        for _ in range(len(jobs)):
+            result = result_queue.get()
+            results.append(result)
+            pbar.update(1)
+    pool.close()
+    pool.join()
+    print("All Download Completed")
 
-def multi_download_fasta(assembly_list, output_seq_file,number_core):
+
+def assembly_working(job_queue, result_queue):
+    while True:
+        job = job_queue.get()
+        if job is None:
+            break
+        result = download_assembly_file(job)
+        result_queue.put(result)
+
+def multi_download_fasta(df_ssembly_list, output_seq_file,number_core):
     folder_output_fasta = output_seq_file + '/Assembly/'
     if not os.path.exists(folder_output_fasta):
         os.mkdir(folder_output_fasta)
     else:
         pass
-    assembly_path_list = assembly_list.index
-    with Pool(processes=number_core) as pool:
-        pool.map(download_assembly_file, [(ass_index, assembly_list,folder_output_fasta) for ass_index in assembly_path_list])
+    job_queue = multiprocessing.Queue()
+    result_queue = multiprocessing.Queue()
+    pool = multiprocessing.Pool(processes=number_core, initializer=assembly_working, initargs=(job_queue, result_queue))
+    df_fasta_index = df_ssembly_list.index.tolist()
+    jobs =  [(index_, df_ssembly_list,folder_output_fasta) for index_ in df_fasta_index]
+    with tqdm(total=len(jobs), desc="Processing Jobs") as pbar:
+        for job in jobs:
+            job_queue.put(job)
+        for _ in range(number_core):
+            job_queue.put(None)
+        results = []
+        for _ in range(len(jobs)):
+            result = result_queue.get()
+            results.append(result)
+            pbar.update(1)
+    pool.close()
+    pool.join()
     print("All Download Completed")
-
-
-# def multi_download_fastq(df_sra_list,output_seq_file,number_core):
-#     folder_output_fastq = output_seq_file + '/raw_sequences/'
-#     folder_output_sra = output_seq_file + '/temp_sra/'
-#     if not os.path.exists(folder_output_fastq):
-#         os.mkdir(folder_output_fastq)
-#     else:
-#         pass
-#     if not os.path.exists(folder_output_sra):
-#         os.mkdir(folder_output_sra)
-#     else:
-#         pass
-#     df_sra_index = df_sra_list.index
-#     with Pool(processes=number_core) as pool:
-#         pool.map(process_fastq, [(sra_index, df_sra_list,folder_output_sra,folder_output_fastq) for sra_index in df_sra_index])
-#     if os.path.exists(folder_output_sra):
-#         shutil.rmtree(folder_output_sra, ignore_errors = False)
-#         print("All Download Completed")
