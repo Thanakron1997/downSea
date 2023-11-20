@@ -1,7 +1,7 @@
 import argparse
 import pandas as pd
 from argparse import RawTextHelpFormatter
-from func_downsea import multi_download_fastq,multi_download_sra,multi_download_fasta,multi_download_nucleotide
+from func_downsea import multi_download_fastq,multi_download_sra,multi_download_fasta,multi_download_nucleotide,multi_download_nuc_by_gi
 
 title_program = 'Program for download Sequence file (Raw sequence SRA and FASTQ, Assembly sequence FASTA format)'
 
@@ -106,7 +106,24 @@ elif args.download_type == "nucleotide":
             multi_download_nucleotide(df_nuc_list, output_seq_file,number_core)
         except Exception as e:
             print("Error -> {}".format(e))
+    print("Finished")
 
+elif args.download_type == "gi":
+    input_metadata_file = args.input_csv
+    output_seq_file = args.outputdir
+    core_use = args.multiprocessing
+    metadata_dataframe = pd.read_csv(input_metadata_file)
+    df_metadata = metadata_dataframe[metadata_dataframe['Accession'].notna()]
+    if core_use == None:
+        print("Using 1 core for downloading")
+        number_core = 1
+        multi_download_nuc_by_gi(df_metadata, output_seq_file,number_core)
+    else:
+        try:
+            number_core = int(core_use)
+            multi_download_nuc_by_gi(df_metadata, output_seq_file,number_core)
+        except Exception as e:
+            print("Error -> {}".format(e))
     print("Finished")
 else:
     print("Invalid operation")

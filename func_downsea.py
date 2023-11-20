@@ -189,6 +189,17 @@ def download_assembly_file(ass_index,assembly_list,folder_output_fasta):
                     shutil.copyfileobj(f_in, f_out)
             os.remove(file_name_path_raw)
 
+def download_ncleotide_by_gi(args):
+    gi_index, df_gi,folder_output_gi = args
+    gi_i = df_gi['Gi_list'][gi_index]
+    name_i = df_gi['Accession'][gi_index]
+    link = 'efetch.fcgi?db=nuccore&id=' +str(gi_i) +'&rettype=fasta&retmode=text'
+    cmd_eutils = 'wget -P '+  folder_output_gi +' "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/' + link +'"'
+    processresult = subprocess.run(cmd_eutils, shell=True, capture_output=True)
+    error_logs(cmd_eutils,processresult)
+    fileName = str(name_i) + '.fasta'
+    os.rename(folder_output_gi+link, folder_output_gi + fileName) 
+
 # ===================================================================== #
 #                       process seqences function
 # ===================================================================== #
@@ -370,3 +381,35 @@ def multi_download_fasta(df_ssembly_list, output_seq_file,number_core):
     pool.close()
     pool.join()
     print("All Download Completed")
+
+def gi_working(job_queue, result_queue):
+    while True:
+        job = job_queue.get()
+        if job is None:
+            break
+        result = download_ncleotide_by_gi(job)
+        result_queue.put(result)
+
+def multi_download_nuc_by_gi(df_gi,output_seq_file,number_core):
+    folder_output_fastq = output_seq_file + '/nucleotide_/'
+    if not os.path.exists(folder_output_fastq):
+        os.mkdir(folder_output_fastq)
+    else:
+        pass
+    job_queue = multiprocessing.Queue()
+    result_queue = multiprocessing.Queue()
+    pool = multiprocessing.Pool(processes=number_core, initializer=gi_working, initargs=(job_queue, result_queue))
+    df_gi_index = df_gi.index.tolist()
+    jobs =  [(index_, df_gi,folder_output_fastq) for index_ in df_gi_index]
+    with tqdm(total=len(jobs), desc="Processing Jobs") as pbar:
+        for job in jobs:
+            job_queue.put(job)
+        for _ in range(number_core):
+            job_queue.put(None)
+        results = []
+        for _ in range(len(jobs)):
+            result = result_queue.get()
+            results.append(result)
+            pbar.update(1)
+    pool.close()
+    pool.join()
