@@ -190,15 +190,19 @@ def download_assembly_file(ass_index,assembly_list,folder_output_fasta):
             os.remove(file_name_path_raw)
 
 def download_ncleotide_by_gi(args):
-    gi_index, df_gi,folder_output_gi = args
-    gi_i = df_gi['Gi_list'][gi_index]
-    name_i = df_gi['Accession'][gi_index]
-    link = 'efetch.fcgi?db=nuccore&id=' +str(gi_i) +'&rettype=fasta&retmode=text'
-    cmd_eutils = 'wget -P '+  folder_output_gi +' "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/' + link +'"'
-    processresult = subprocess.run(cmd_eutils, shell=True, capture_output=True)
-    error_logs(cmd_eutils,processresult)
-    fileName = str(name_i) + '.fasta'
-    os.rename(folder_output_gi+link, folder_output_gi + fileName) 
+    try:
+        gi_index, df_gi,folder_output_gi = args
+        gi_i = df_gi['Gi_list'][gi_index]
+        name_i = df_gi['Accession'][gi_index]
+        link = 'efetch.fcgi?db=nuccore&id=' +str(gi_i) +'&rettype=fasta&retmode=text'
+        cmd_eutils = 'wget -P '+  folder_output_gi +' "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/' + link +'"'
+        processresult = subprocess.run(cmd_eutils, shell=True, capture_output=True)
+        error_logs(cmd_eutils,processresult)
+        fileName = str(name_i) + '.fasta'
+        os.rename(folder_output_gi+link, folder_output_gi + fileName) 
+    except Exception as e_1:
+        error_logs_try("Error -> {} in {}".format(e_1,name_i),e_1)
+
 
 # ===================================================================== #
 #                       process seqences function
