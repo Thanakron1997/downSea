@@ -1,0 +1,62 @@
+2025-02-03 20:37:47 - Error executing command: wget -P /home/ad0/storage_3/pangenome/salmonella/seq_test//fasta_entrez/ "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=526218030&rettype=fasta&retmode=text"
+2025-02-03 20:37:47 - Return code: 8
+2025-02-03 20:37:47 - Error output: --2025-02-03 20:37:41--  https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=526218030&rettype=fasta&retmode=text
+Resolving eutils.ncbi.nlm.nih.gov (eutils.ncbi.nlm.nih.gov)... 130.14.29.110, 2607:f220:41e:4290::110
+Connecting to eutils.ncbi.nlm.nih.gov (eutils.ncbi.nlm.nih.gov)|130.14.29.110|:443... connected.
+HTTP request sent, awaiting response... 429 Too Many Requests
+2025-02-03 20:37:47 ERROR 429: Too Many Requests.
+
+
+2025-02-03 20:37:47 - Error executing command: Error -> [Errno 2] No such file or directory: '/home/ad0/storage_3/pangenome/salmonella/seq_test//fasta_entrez/efetch.fcgi?db=nuccore&id=526218030&rettype=fasta&retmode=text' -> '/home/ad0/storage_3/pangenome/salmonella/seq_test//fasta_entrez/NC_021820.1.fasta' in NC_021820.1
+2025-02-03 20:37:47 - Exception: [Errno 2] No such file or directory: '/home/ad0/storage_3/pangenome/salmonella/seq_test//fasta_entrez/efetch.fcgi?db=nuccore&id=526218030&rettype=fasta&retmode=text' -> '/home/ad0/storage_3/pangenome/salmonella/seq_test//fasta_entrez/NC_021820.1.fasta'
+2025-02-03 20:38:48 - Error executing command: wget -P /home/ad0/storage_3/pangenome/salmonella/seq_test//genbank_entrez/ "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=1021303146&rettype=gbwithparts&retmode=text"
+2025-02-03 20:38:48 - Return code: 8
+2025-02-03 20:38:48 - Error output: --2025-02-03 20:38:47--  https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=1021303146&rettype=gbwithparts&retmode=text
+Resolving eutils.ncbi.nlm.nih.gov (eutils.ncbi.nlm.nih.gov)... 130.14.29.110, 2607:f220:41e:4290::110
+Connecting to eutils.ncbi.nlm.nih.gov (eutils.ncbi.nlm.nih.gov)|130.14.29.110|:443... connected.
+HTTP request sent, awaiting response... 429 Too Many Requests
+2025-02-03 20:38:48 ERROR 429: Too Many Requests.
+
+
+2025-02-03 20:38:48 - Error executing command: Error -> [Errno 2] No such file or directory: '/home/ad0/storage_3/pangenome/salmonella/seq_test//genbank_entrez/efetch.fcgi?db=nuccore&id=1021303146&rettype=gbwithparts&retmode=text' -> '/home/ad0/storage_3/pangenome/salmonella/seq_test//genbank_entrez/NZ_CP014981.1.gb' in NZ_CP014981.1
+2025-02-03 20:38:48 - Exception: [Errno 2] No such file or directory: '/home/ad0/storage_3/pangenome/salmonella/seq_test//genbank_entrez/efetch.fcgi?db=nuccore&id=1021303146&rettype=gbwithparts&retmode=text' -> '/home/ad0/storage_3/pangenome/salmonella/seq_test//genbank_entrez/NZ_CP014981.1.gb'
+2025-02-03 20:40:28 - Error executing command: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch -f yes -o /home/ad0/storage_3/pangenome/salmonella/seq_test//sra//DRR022208.sra DRR022208
+2025-02-03 20:40:28 - Return code: 127
+2025-02-03 20:40:28 - Error output: /bin/sh: 1: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch: not found
+
+2025-02-03 20:40:28 - Error executing command: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch -f yes -o /home/ad0/storage_3/pangenome/salmonella/seq_test//sra//DRR022207.sra DRR022207
+2025-02-03 20:40:28 - Return code: 127
+2025-02-03 20:40:28 - Error output: /bin/sh: 1: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch: not found
+
+2025-02-03 20:40:28 - Error executing command: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch -f yes -o /home/ad0/storage_3/pangenome/salmonella/seq_test//sra//DRR022206.sra DRR022206
+2025-02-03 20:40:28 - Return code: 127
+2025-02-03 20:40:28 - Error output: /bin/sh: 1: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch: not found
+
+2025-02-03 20:40:28 - Error executing command: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch -f yes -o /home/ad0/storage_3/pangenome/salmonella/seq_test//sra//DRR022205.sra DRR022205
+2025-02-03 20:40:28 - Return code: 127
+2025-02-03 20:40:28 - Error output: /bin/sh: 1: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch: not found
+
+2025-02-03 20:40:58 - Error executing command: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch -f yes -o /home/ad0/storage_3/pangenome/salmonella/seq_test//sra//DRR022207.sra DRR022207
+2025-02-03 20:40:58 - Return code: 127
+2025-02-03 20:40:58 - Error output: /bin/sh: 1: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch: not found
+
+2025-02-03 20:42:01 - Error executing command: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch -f yes -o /home/ad0/storage_3/pangenome/salmonella/seq_test//sra//DRR022205.sra DRR022205
+2025-02-03 20:42:01 - Return code: 127
+2025-02-03 20:42:01 - Error output: /bin/sh: 1: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch: not found
+
+2025-02-03 20:42:17 - Error executing command: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch -f yes -o /home/ad0/storage_3/pangenome/salmonella/seq_test//sra//DRR022206.sra DRR022206
+2025-02-03 20:42:17 - Return code: 127
+2025-02-03 20:42:17 - Error output: /bin/sh: 1: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch: not found
+
+2025-02-03 20:42:19 - Error executing command: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch -f yes -o /home/ad0/storage_3/pangenome/salmonella/seq_test//sra//DRR022207.sra DRR022207
+2025-02-03 20:42:19 - Return code: 127
+2025-02-03 20:42:19 - Error output: /bin/sh: 1: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch: not found
+
+2025-02-03 20:42:28 - Error executing command: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch -f yes -o /home/ad0/storage_3/pangenome/salmonella/seq_test//sra//DRR022208.sra DRR022208
+2025-02-03 20:42:28 - Return code: 127
+2025-02-03 20:42:28 - Error output: /bin/sh: 1: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch: not found
+
+2025-02-03 20:42:39 - Error executing command: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch -f yes -o /home/ad0/storage_3/pangenome/salmonella/seq_test//sra//DRR022205.sra DRR022205
+2025-02-03 20:42:39 - Return code: 127
+2025-02-03 20:42:39 - Error output: /bin/sh: 1: /home/ad0/storage_1/down_sea/down_sea/sratoolkit/bin/prefetch: not found
+
