@@ -12,7 +12,7 @@ from tqdm import tqdm
 import multiprocessing
 from down_sea.errorlog import error_logs,error_logs_try
 
-file_path = os.path.dirname(os.path.realpath(__file__)) +'/'
+file_path = os.path.dirname(os.path.realpath(__file__))
 dir_path = os.path.dirname(file_path) + '/'
 with open('down_sea/config.json', 'r') as f:
     config = json.load(f)
