@@ -1,10 +1,5 @@
-﻿Scientific_name,Strain,Isolate_identifiers,Data_type,Create_date,Location,Isolation_source,Isolation_type,Host,Collection_date_old,Collected_by,BioSample,BioProject,asm_acc,Run
-Campylobacter jejuni,NCTC11168,"""11168"",""NCTC 11168"",""SRS4702909""",Assembled,2020-07-08T13:25:55Z,United Kingdom: Worcester,feces,clinical,Homo sapiens,1977,Worcestershire Royal Hospital,SAMN11415931,PRJNA532555,GCA_013392775.1,
-Campylobacter jejuni,R17.3468,,Raw,,Taiwan,,,Homo sapiens,2017,Taiwan CDC,SAMN15156839,PRJNA637789,,SRR11942647
-Campylobacter jejuni,R17.2191,,Raw,,Taiwan,,,Homo sapiens,2017,Taiwan CDC,SAMN15156828,PRJNA637789,,SRR11942659
-Campylobacter jejuni,R17.2375,,Raw,,Taiwan,,,Homo sapiens,2017,Taiwan CDC,SAMN15156832,PRJNA637789,,SRR11942655
-Campylobacter jejuni,R17.0792,,Raw,,Taiwan,,,Homo sapiens,2017,Taiwan CDC,SAMN15156802,PRJNA637789,,SRR11942688
-Campylobacter jejuni,THJ047,,Assembled,,Japan:Toyama,feces,,Homo sapiens,10/1/2017,,SAMD00491690,PRJDB13586,GCA_024348245.1,
-Campylobacter jejuni,THJ048,,Assembled,,Japan:Toyama,feces,,Homo sapiens,8/2/2017,,SAMD00491691,PRJDB13586,GCA_024348345.1,
-Campylobacter jejuni,THJ049,,Assembled,,Japan:Toyama,feces,,Homo sapiens,11/4/2017,,SAMD00491692,PRJDB13586,GCA_024342705.1,
-Campylobacter jejuni,THJ049,,Assembled,,Japan:Toyama,feces,,Homo sapiens,11/4/2017,,SAMD00491692,PRJDB13586,,SRR11942780
+﻿Gi_list,Accession,Run,asm_acc
+1109557564,NC_003197.2,,
+378697983,NC_016810.1,,
+,,SRR11942647,
+,,,GCA_024342705.1
