@@ -38,7 +38,6 @@ def download_sequences_by_datasets(args):
         dot_file = ".fna"
 
     cmd_for_download = dataset_path + " download genome accession "+assembly_name_i+ " --include "+load_type+" --filename " + file_out_put_name
-    print(cmd_for_download)
     processresult = subprocess.run(cmd_for_download,shell=True, capture_output=True)
     error_logs(cmd_for_download,processresult)
     if not os.path.exists(file_out_put_name):
@@ -183,7 +182,7 @@ def process_sratoolkit_func(args):
     try:
         cmd_for_download_sra = download_sra_file(file_sra_i,sra_run_i)
     except Exception as e:
-        print("Error -> {} in {}".format(e,sra_run_i))
+        # print("Error -> {} in {}".format(e,sra_run_i))
         error_logs_try("Error -> {} in {}".format(e,sra_run_i),e)
     # download fastq
     if  file_type == 'fastq' or file_type == 'all':
@@ -191,7 +190,7 @@ def process_sratoolkit_func(args):
             # cmd_for_download_sra = download_sra_file(file_sra_i,sra_run_i)
             download_fastq_file(file_sra_i,sra_run_i,folder_output_fastq,cmd_for_download_sra)
         except Exception as e_all:
-            print("Error -> {} in {}".format(e_all,sra_run_i))
+            # print("Error -> {} in {}".format(e_all,sra_run_i))
             error_logs_try("Error -> {} in {}".format(e_all,sra_run_i),e_all)
  
 # ===================================================================== #
@@ -271,7 +270,6 @@ def multi_download_datasets(df_ssembly_list, output_seq_file,number_core,file_ty
             pbar.update(1)
     pool.close()
     pool.join()
-    print("All Download Completed")
 
 def entrez_working(job_queue, result_queue):
     while True:
