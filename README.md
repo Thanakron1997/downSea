@@ -1,4 +1,4 @@
-down_sea
+downSea
 ==============
 
 Program for multi-download sequence file in many formats (SRA, FASTQ, FASTA and GenBank).
