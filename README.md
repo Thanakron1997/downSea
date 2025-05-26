@@ -58,5 +58,5 @@ options:
 # Example 
 - Run Command below
 ```
-python3 down_sea.py entrez_mode -i test.csv -o test_seq -f gb -m 4
+python3 down_sea.py entrez_mode -i test_csv.csv -o test_seq -f gb -m 4
 ```
