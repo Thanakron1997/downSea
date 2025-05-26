@@ -13,6 +13,7 @@ Created By THN (https://github.com/Thanakron1997)
 if __name__ == "__main__":
     title_program = 'Program for multi-download sequence file by sratoolkit(output = SRA,FASTQ) or entrez with GI(GenBank, FASTA) or datasets(GenBank, FASTA)'
     parser = argparse.ArgumentParser(description=title_program,formatter_class=RawTextHelpFormatter)
+    parser.add_argument('--version',  '-v',action='version', version='%(prog)s 1.0.1')
     subparsers = parser.add_subparsers(dest='command') # dest = 'command' > specify object name command
 
     ### download by sratoolkit
