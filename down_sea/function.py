@@ -204,7 +204,7 @@ class entrezMode:
                 fileName = str(name_i) + '.fasta'
             cmd_eutils = 'wget -P '+  folder_output_gi +' "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/' + link +'"'
             processresult = subprocess.run(cmd_eutils, shell=True, capture_output=True)
-            self.error_logs(cmd_eutils,processresult)
+            self.errorsLogFun.error_logs(cmd_eutils,processresult)
             os.rename(folder_output_gi+link, folder_output_gi + fileName)
             pathFile = os.path.join(folder_output_gi,fileName)
             if os.path.exists(pathFile) and self.gz_file == True and file_type == 'fasta':
@@ -214,7 +214,7 @@ class entrezMode:
                         shutil.copyfileobj(f_in, f_out)
                 os.remove(pathFile)
         except Exception as e_1:
-            self.error_logs_try("Error -> {} in {}".format(e_1,name_i),e_1)
+            self.errorsLogFun.error_logs_try("Error -> {} in {}".format(e_1,name_i),e_1)
 
     def entrez_working(self,job_queue, result_queue):
         while True:
@@ -287,7 +287,7 @@ class sratoolkitMode:
     def download_sra_file(self,file_sra_i,sra_run_i):
         cmd_for_download_sra = self.prefetch_com +" -f yes -o " + file_sra_i + ' ' + sra_run_i
         processresult = subprocess.run(cmd_for_download_sra,shell=True, capture_output=True)
-        self.error_logs(cmd_for_download_sra,processresult)
+        self.errorsLogFun.error_logs(cmd_for_download_sra,processresult)
         if not os.path.exists(file_sra_i): # check file 
             i_loop = 1
             while  i_loop < self.count_loop:
@@ -295,7 +295,7 @@ class sratoolkitMode:
                 sec_ran_reload = random.randint(30, 120)
                 time.sleep(sec_ran_reload)
                 processresult = subprocess.run(cmd_for_download_sra,shell=True, capture_output=True)
-                self.error_logs(cmd_for_download_sra,processresult)
+                self.errorsLogFun.error_logs(cmd_for_download_sra,processresult)
                 if os.path.exists(file_sra_i):
                     break
         return cmd_for_download_sra
@@ -303,7 +303,7 @@ class sratoolkitMode:
     def download_fastq_file(self,file_sra_i,sra_run_i,folder_output_fastq,cmd_for_download_sra):
         cmd_fasterq_dump = self.fasterq_domp_com + " " + file_sra_i + " -O " + folder_output_fastq 
         processresult = subprocess.run(cmd_fasterq_dump, shell=True, capture_output=True)
-        self.error_logs(cmd_fasterq_dump,processresult)
+        self.errorsLogFun.error_logs(cmd_fasterq_dump,processresult)
 
         files_in_directory = os.listdir(folder_output_fastq)
         files_contain_target = [file for file in files_in_directory if sra_run_i in file]
@@ -313,11 +313,11 @@ class sratoolkitMode:
         elif total_files_fastq == 0:
             if not os.path.exists(file_sra_i):
                 processresult = subprocess.run(cmd_for_download_sra,shell=True, capture_output=True)
-                self.error_logs(cmd_for_download_sra,processresult)
+                self.errorsLogFun.error_logs(cmd_for_download_sra,processresult)
             else:
                 cmd_fastq_dump = self.fastq_dump + " " + file_sra_i + " -O " + folder_output_fastq
                 processresult = subprocess.run(cmd_fastq_dump, shell=True, capture_output=True)
-                self.error_logs(cmd_fasterq_dump,processresult)
+                self.errorsLogFun.error_logs(cmd_fasterq_dump,processresult)
         else:
             pass
         if self.gz_file == True:
@@ -330,7 +330,7 @@ class sratoolkitMode:
                             shutil.copyfileobj(f_in, f_out)
                     os.remove(file_name_path_raw)
             except Exception as e_1:
-                self.error_logs_try("Error -> {} in {}".format(e_1,sra_run_i),e_1)
+                self.errorsLogFun.error_logs_try("Error -> {} in {}".format(e_1,sra_run_i),e_1)
 
     def process_sratoolkit_func(self,args):
         sra_index, df_sra_list,folder_output_sra,folder_output_fastq,file_type = args
@@ -341,15 +341,15 @@ class sratoolkitMode:
             cmd_for_download_sra = self.download_sra_file(file_sra_i,sra_run_i)
         except Exception as e:
             # print("Error -> {} in {}".format(e,sra_run_i))
-            self.error_logs_try("Error -> {} in {}".format(e,sra_run_i),e)
+            self.errorsLogFun.error_logs_try("Error -> {} in {}".format(e,sra_run_i),e)
         # download fastq
         if  file_type == 'fastq' or file_type == 'all':
             try:
                 # cmd_for_download_sra = download_sra_file(file_sra_i,sra_run_i)
-                self.download_fastq_file(file_sra_i,sra_run_i,folder_output_fastq,cmd_for_download_sra)
+                self.errorsLogFun.download_fastq_file(file_sra_i,sra_run_i,folder_output_fastq,cmd_for_download_sra)
             except Exception as e_all:
                 # print("Error -> {} in {}".format(e_all,sra_run_i))
-                self.error_logs_try("Error -> {} in {}".format(e_all,sra_run_i),e_all)
+                self.errorsLogFun.error_logs_try("Error -> {} in {}".format(e_all,sra_run_i),e_all)
  
     def sratoolkit_working(self,job_queue, result_queue):
         while True:
