@@ -346,7 +346,7 @@ class sratoolkitMode:
         if  file_type == 'fastq' or file_type == 'all':
             try:
                 # cmd_for_download_sra = download_sra_file(file_sra_i,sra_run_i)
-                self.errorsLogFun.download_fastq_file(file_sra_i,sra_run_i,folder_output_fastq,cmd_for_download_sra)
+                self.download_fastq_file(file_sra_i,sra_run_i,folder_output_fastq,cmd_for_download_sra)
             except Exception as e_all:
                 # print("Error -> {} in {}".format(e_all,sra_run_i))
                 self.errorsLogFun.error_logs_try("Error -> {} in {}".format(e_all,sra_run_i),e_all)
