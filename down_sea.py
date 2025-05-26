@@ -2,7 +2,7 @@ import argparse
 import pandas as pd
 import os
 from argparse import RawTextHelpFormatter
-from down_sea.function import multi_download_sratoolkit,multi_download_entrez,multi_download_datasets
+from down_sea.function import entrezMode,sratoolkitMode,datasetsMode
 
 """
 Program for multi-download sequence file in many formats (SRA, FASTQ, FASTA and GenBank).
@@ -57,7 +57,8 @@ if __name__ == "__main__":
         else:
             number_core = int(core_use)
         if file_type in ['all','fastq','sra']:
-            multi_download_sratoolkit(df_sra_list, output_seq_file,number_core,file_type)
+            sratoolkitFuc = sratoolkitMode()
+            sratoolkitFuc.multi_download_sratoolkit(df_sra_list, output_seq_file,number_core,file_type)
             print("Finished")
         else:
             print(f"Not Support format: {file_type}")
@@ -80,7 +81,8 @@ if __name__ == "__main__":
         else:
             number_core = int(core_use)
         if file_type in ['gb','fasta']:
-            multi_download_entrez(df_gi_list, output_seq_file,number_core,file_type)
+            entrezFuc = entrezMode()
+            entrezFuc.multi_download_entrez(df_gi_list, output_seq_file,number_core,file_type)
             print("Finished")
         else:
             print(f"Not Support format: {file_type}")
@@ -103,7 +105,8 @@ if __name__ == "__main__":
         else:
             number_core = int(core_use)
         if file_type in ['gb','fasta']:
-            multi_download_datasets(assembly_list, output_seq_file,number_core,file_type)
+            datasetsFuc = datasetsMode()
+            datasetsFuc.multi_download_datasets(assembly_list, output_seq_file,number_core,file_type)
             print("Finished")
         else:
             print(f"Not Support format: {file_type}")
