@@ -117,14 +117,13 @@ class datasetsMode:
                     shutil.move(i, file_fasta_i_move)
                     file_remove_i = folder_output_fasta + assembly_i_GCF
                     shutil.rmtree(file_remove_i)
-
-            if os.path.exists(file_fasta_i_move) and self.gz_file == True and file_type == 'fasta':
-                file_name_path_raw = file_fasta_i_move
-                file_name_path_gz = file_fasta_i_move + '.gz'
-                with open(file_name_path_raw, 'rb') as f_in:
-                    with gzip.open(file_name_path_gz, 'wb') as f_out:
-                        shutil.copyfileobj(f_in, f_out)
-                os.remove(file_name_path_raw)
+        if os.path.exists(file_fasta_i_move) and self.gz_file == True and file_type == 'fasta':
+            file_name_path_raw = file_fasta_i_move
+            file_name_path_gz = file_fasta_i_move + '.gz'
+            with open(file_name_path_raw, 'rb') as f_in:
+                with gzip.open(file_name_path_gz, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+            os.remove(file_name_path_raw)
 
     def assembly_datasets(self,job_queue, result_queue):
         while True:
