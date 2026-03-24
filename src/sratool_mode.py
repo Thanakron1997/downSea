@@ -1,7 +1,5 @@
 import os
 import subprocess
-import glob
-import zipfile
 import shutil
 import random
 import time
