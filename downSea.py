@@ -2,7 +2,8 @@ import argparse
 import pandas as pd
 import os
 from argparse import RawTextHelpFormatter
-from down_sea.function import entrezMode,sratoolkitMode,datasetsMode
+from src.function import entrezMode,datasetsMode
+from src.sratool_mode import sratoolkitMode
 
 """
 Program for multi-download sequence file in many formats (SRA, FASTQ, FASTA and GenBank).
@@ -23,6 +24,7 @@ if __name__ == "__main__":
     sratool_mode.add_argument("-o", "--outputdir", help="Output directory folder Ex.  /home/test/test_download\n\n")
     sratool_mode.add_argument("-i", "--input_csv", help="Input file in csv format\n\n")
     sratool_mode.add_argument("-m", "--multiprocessing",help="Use Multiprocess for faster download enter code : 1 - 20\n\n")
+    
 
     ### download by Entrez
     des_entrez_mode = 'Download file by entrez with GI (GenBank, FASTA)'
@@ -47,7 +49,8 @@ if __name__ == "__main__":
         core_use = args.multiprocessing
         file_type = args.file_type
         metadata_dataframe = pd.read_csv(input_metadata_file)
-        df_sra_list = metadata_dataframe[metadata_dataframe['Run'].notna()]
+        sra_list = metadata_dataframe[metadata_dataframe['Run'].notna()]
+        sra_list = sra_list['Run'].to_list()
         if not os.path.exists(output_seq_file):
             os.mkdir(output_seq_file)
         if file_type is None:
@@ -59,7 +62,7 @@ if __name__ == "__main__":
             number_core = int(core_use)
         if file_type in ['all','fastq','sra']:
             sratoolkitFuc = sratoolkitMode()
-            sratoolkitFuc.multi_download_sratoolkit(df_sra_list, output_seq_file,number_core,file_type)
+            sratoolkitFuc.multi_download_sratoolkit(sra_list, output_seq_file,number_core,file_type)
             print("Finished")
         else:
             print(f"Not Support format: {file_type}")

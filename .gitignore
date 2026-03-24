@@ -128,10 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 #
-sratoolkit/
+sratoolkit*
 dataset*
-nuc_dengue_thai.csv
 dataformat*
-xx.py
-files_download/
-test.csv
+test*

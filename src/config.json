@@ -1,4 +1,4 @@
 {
-    "gz_file": false, 
+    "gz_file": true, 
     "count_loop": 10,
     "logFIle":"error_log.txt"}
