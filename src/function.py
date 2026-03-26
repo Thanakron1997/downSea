@@ -58,72 +58,76 @@ class datasetsMode:
         self.errorsLogFun = errorsLog()
 
     def download_sequences_by_datasets(self,args):
-        ass_index,assembly_list,folder_output_fasta,file_type = args
-        assembly_name_i = str(assembly_list['asm_acc'][ass_index])
-        file_out_put_name = folder_output_fasta + assembly_name_i + '.zip'
-        if file_type == 'gb':
-            load_type = 'gbff'
-            dot_file = ".gbff"
-        else:
-            load_type = 'genome'
-            dot_file = ".fna"
+        try:
+            ass_index,assembly_list,folder_output_fasta,file_type = args
+            assembly_name_i = str(assembly_list['asm_acc'][ass_index])
+            file_out_put_name = folder_output_fasta + assembly_name_i + '.zip'
+            if file_type == 'gb':
+                load_type = 'gbff'
+                dot_file = ".gbff"
+            else:
+                load_type = 'genome'
+                dot_file = ".fna"
+            file_fasta_i_move = folder_output_fasta + assembly_name_i + dot_file
 
-        cmd_for_download = self.dataset_path + " download genome accession "+assembly_name_i+ " --include "+load_type+" --filename " + file_out_put_name
-        processresult = subprocess.run(cmd_for_download,shell=True, capture_output=True)
-        self.errorsLogFun.error_logs(cmd_for_download,processresult)
-        if not os.path.exists(file_out_put_name):
-            sec_ran = random.randint(30, 150)
-            time.sleep(sec_ran)
+            cmd_for_download = self.dataset_path + " download genome accession "+assembly_name_i+ " --include "+load_type+" --filename " + file_out_put_name
             processresult = subprocess.run(cmd_for_download,shell=True, capture_output=True)
             self.errorsLogFun.error_logs(cmd_for_download,processresult)
+            if not os.path.exists(file_out_put_name):
+                sec_ran = random.randint(30, 150)
+                time.sleep(sec_ran)
+                processresult = subprocess.run(cmd_for_download,shell=True, capture_output=True)
+                self.errorsLogFun.error_logs(cmd_for_download,processresult)
 
-        if os.path.exists(file_out_put_name):
-            extract_zip_path = folder_output_fasta + assembly_name_i
-            with zipfile.ZipFile(file_out_put_name, 'r') as zip_ref:
-                zip_ref.extractall(extract_zip_path)
-            os.remove(file_out_put_name)
-            file_fasta_i = folder_output_fasta + assembly_name_i + '/ncbi_dataset/data/' + assembly_name_i +'/*' + dot_file
-            file_fasta_i_move = folder_output_fasta + assembly_name_i + dot_file
-            for i in glob.glob(file_fasta_i):
-                shutil.move(i, file_fasta_i_move)
-                file_remove_i = folder_output_fasta + assembly_name_i
-                shutil.rmtree(file_remove_i)
-
-        if not os.path.exists(file_fasta_i_move):
-            assembly_i_GCF = assembly_name_i.replace("GCA", "GCF")
-            file_out_put_name_2 = folder_output_fasta +'/' + assembly_i_GCF + '.zip'
-            cmd_for_download_2 = self.dataset_path + " download genome accession "+assembly_i_GCF+ " --include "+load_type+" --filename " + file_out_put_name_2
-            processresult = subprocess.run(cmd_for_download_2,shell=True, capture_output=True)
-            self.errorsLogFun.error_logs(cmd_for_download_2,processresult)
-            if not os.path.exists(file_out_put_name_2):
-                i_loop = 1
-                while  i_loop < self.count_loop:
-                    i_loop += 1
-                    sec_ran_reload = random.randint(30, 120)
-                    time.sleep(sec_ran_reload)
-                    processresult = subprocess.run(cmd_for_download_2,shell=True, capture_output=True)
-                    self.errorsLogFun.error_logs(cmd_for_download_2,processresult)
-                    if os.path.exists(file_out_put_name_2):
-                        break
-        
-            if os.path.exists(file_out_put_name_2):
-                extract_zip_path = folder_output_fasta + assembly_i_GCF
-                with zipfile.ZipFile(file_out_put_name_2, 'r') as zip_ref:
+            if os.path.exists(file_out_put_name):
+                extract_zip_path = folder_output_fasta + assembly_name_i
+                with zipfile.ZipFile(file_out_put_name, 'r') as zip_ref:
                     zip_ref.extractall(extract_zip_path)
                 os.remove(file_out_put_name)
-                file_fasta_i = folder_output_fasta + assembly_i_GCF + '/ncbi_dataset/data/' + assembly_name_i +'/*' + dot_file
-                file_fasta_i_move = folder_output_fasta + assembly_name_i + dot_file
+                file_fasta_i = folder_output_fasta + assembly_name_i + '/ncbi_dataset/data/' + assembly_name_i +'/*' + dot_file
+                
                 for i in glob.glob(file_fasta_i):
                     shutil.move(i, file_fasta_i_move)
-                    file_remove_i = folder_output_fasta + assembly_i_GCF
+                    file_remove_i = folder_output_fasta + assembly_name_i
                     shutil.rmtree(file_remove_i)
-        if os.path.exists(file_fasta_i_move) and self.gz_file == True and file_type == 'fasta':
-            file_name_path_raw = file_fasta_i_move
-            file_name_path_gz = file_fasta_i_move + '.gz'
-            with open(file_name_path_raw, 'rb') as f_in:
-                with gzip.open(file_name_path_gz, 'wb') as f_out:
-                    shutil.copyfileobj(f_in, f_out)
-            os.remove(file_name_path_raw)
+            else:
+                assembly_i_GCF = assembly_name_i.replace("GCA", "GCF")
+                file_out_put_name_2 = folder_output_fasta +'/' + assembly_i_GCF + '.zip'
+                cmd_for_download_2 = self.dataset_path + " download genome accession "+assembly_i_GCF+ " --include "+load_type+" --filename " + file_out_put_name_2
+                processresult = subprocess.run(cmd_for_download_2,shell=True, capture_output=True)
+                self.errorsLogFun.error_logs(cmd_for_download_2,processresult)
+                if not os.path.exists(file_out_put_name_2):
+                    i_loop = 1
+                    while  i_loop < self.count_loop:
+                        i_loop += 1
+                        sec_ran_reload = random.randint(30, 120)
+                        time.sleep(sec_ran_reload)
+                        processresult = subprocess.run(cmd_for_download_2,shell=True, capture_output=True)
+                        self.errorsLogFun.error_logs(cmd_for_download_2,processresult)
+                        if os.path.exists(file_out_put_name_2):
+                            break
+            
+                if os.path.exists(file_out_put_name_2):
+                    extract_zip_path = folder_output_fasta + assembly_i_GCF
+                    with zipfile.ZipFile(file_out_put_name_2, 'r') as zip_ref:
+                        zip_ref.extractall(extract_zip_path)
+                    os.remove(file_out_put_name)
+                    file_fasta_i = folder_output_fasta + assembly_i_GCF + '/ncbi_dataset/data/' + assembly_name_i +'/*' + dot_file
+                    file_fasta_i_move = folder_output_fasta + assembly_name_i + dot_file
+                    for i in glob.glob(file_fasta_i):
+                        shutil.move(i, file_fasta_i_move)
+                        file_remove_i = folder_output_fasta + assembly_i_GCF
+                        shutil.rmtree(file_remove_i)
+
+            if os.path.exists(file_fasta_i_move) and self.gz_file == True and file_type == 'fasta':
+                file_name_path_raw = file_fasta_i_move
+                file_name_path_gz = file_fasta_i_move + '.gz'
+                with open(file_name_path_raw, 'rb') as f_in:
+                    with gzip.open(file_name_path_gz, 'wb') as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+                os.remove(file_name_path_raw)
+        except Exception as e_1:
+            self.errorsLogFun.error_logs_try("Error -> {} in {}".format(e_1,assembly_name_i),e_1)
 
     def assembly_datasets(self,job_queue, result_queue):
         while True:
